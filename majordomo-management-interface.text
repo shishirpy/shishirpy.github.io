@@ -1,0 +1,58 @@
+Title: Majordomo Management Interface
+Date: 2020-06-09 10:20
+Category: protocols, zeromq, messaging
+Tags: zeromq, distributed systems
+
+In my [last post]({filename}/majordomo_protocol.md), we saw an example of the `majordomo protocol` (MDP) in action. MDP is a reliable service oriented protocol. It can be become the single point to server different services to any user.
+The [broker implementation](static/mdbroker.py) in the example also has a special feature, called the `majordomo management interface` (MMI), it can tell if there is at least on worker for a given service, i.e., if the the service is available or not. This is achieved by creating a `mmi.service` service on the broker. The service can be easily called by:
+
+```python
+reply = client.send(b"mmi.service", b"s_name")
+```
+This will check if the service `s_name` is available or not. The reply will be `200` if `s_name` is available otherwise it will return `404`.
+
+Let use look at the sections of the `mdbroker.py` that enables us to do so. There is an attribute `INTERNAL_SERVICE_PREFIX = b"mmi."` this determines the prefix by which the request must start. The function `process_client` shown below check if the requested service is the management interface.
+
+```python
+def process_client(self, sender, msg):
+        """Process a request coming from a client."""
+        assert len(msg) >= 2 # Service name + body
+        service = msg.pop(0)
+        # Set reply return address to client sender
+        msg = [sender, b''] + msg
+        if service.startswith(self.INTERNAL_SERVICE_PREFIX):
+            self.service_internal(service, msg)
+        else:
+            self.dispatch(self.require_service(service), msg)
+```
+
+If the management interface is requested then the `service_internal` function is called:
+
+```python
+def service_internal(self, service, msg):
+        """Handle internal service according to 8/MMI specification"""
+        returncode = b"501"
+        if b"mmi.service" == service:
+            name = msg[-1]
+            returncode = b"200" if name in self.services else b"404"
+        msg[-1] = returncode
+
+        # insert the protocol header and service name after the routing envelope ([client, ''])
+        msg = msg[:2] + [MDP.C_CLIENT, service] + msg[2:]
+        self.socket.send_multipart(msg)
+```
+
+This only returns if a service is present or not. It still does not give us an entire list of services available. We can do that by making a little modification to the code.
+
+```python
+def service_internal(self, service, msg):
+        """Handle internal service according to 8/MMI specification"""
+        returncode = b"501"
+        if b"mmi.service" == service:
+            returnnode = b", ".join(self.services)
+        msg[-1] = returncode
+
+        # insert the protocol header and service name after the routing envelope ([client, ''])
+        msg = msg[:2] + [MDP.C_CLIENT, service] + msg[2:]
+        self.socket.send_multipart(msg)
+```

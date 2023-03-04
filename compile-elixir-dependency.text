@@ -1,0 +1,20 @@
+Title: Compile Elixir Dependency
+Date: 2023-2-3 22:00
+Category: elixir, mix, erlang, chumak, zeromq
+
+I wanted to use the zeromq [`chumak` library](https://github.com/zeromq/chumak) in Elixir. Since, `chumak` is an Erlang implementation, one should be able to use it without any modifications. I wasn't able to get it working. So decided to make changes to the `mix` dependency source code of `chumak` to find out what was going on. I realized the compiling the application did not compile the changes in `chumak` source code I made. Thanks to this post by [hashrocket](https://til.hashrocket.com/posts/16b7abf766-compile-an-elixir-dependency-as-you-change-it) I learnt that to be able to compile the source code of the dependecy we should add it to the dependencies as follows.
+
+```elixir
+defp deps do
+  [
+    ...
+    {:chumak, '~> 1.4.0', path: 'deps/chumak'}
+    ...
+  ]
+end
+```
+Additionally,
+
+1. I noticed that you cannot simply use the `recompile` command in `iex` shell to compile the dependency changes.
+
+1. You have to exit the current `iex` shell and start a new one with `iex -S mix`.
