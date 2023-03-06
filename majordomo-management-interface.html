@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="uniformly@random, ">
 
-        <link rel="alternate"  href="https://shishirpy.bitbucket.io/feeds/all.atom.xml" type="application/atom+xml" title="uniformly@random Full Atom Feed"/>
+        <link rel="alternate"  href="https://shishirpy.github.io/feeds/all.atom.xml" type="application/atom+xml" title="uniformly@random Full Atom Feed"/>
 
         <title>Majordomo Management Interface // uniformly@random // </title>
 
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://shishirpy.bitbucket.io/theme/css/pure.css">
-    <link rel="stylesheet" href="https://shishirpy.bitbucket.io/theme/css/pygments.css">
+    <link rel="stylesheet" href="https://shishirpy.github.io/theme/css/pure.css">
+    <link rel="stylesheet" href="https://shishirpy.github.io/theme/css/pygments.css">
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
@@ -31,7 +31,7 @@
                 <div class="cover-body">
                     <header class="header">
                         <hgroup>
-                            <h1 class="brand-main"><a href="https://shishirpy.bitbucket.io">uniformly@random</a></h1>
+                            <h1 class="brand-main"><a href="https://shishirpy.github.io">uniformly@random</a></h1>
                             <p class="tagline"></p>
                                 <p class="social">
                                     <a href="https://twitter.com/shishirpy">
@@ -58,12 +58,12 @@
                 <header class="post-header">
                     <h1>Majordomo Management Interface</h1>
                         <p class="post-meta">
-                            // under                                 <a class="post-category" href="https://shishirpy.bitbucket.io/tag/zeromq.html">zeromq</a>
-                                <a class="post-category" href="https://shishirpy.bitbucket.io/tag/distributed-systems.html">distributed systems</a>
+                            // under                                 <a class="post-category" href="https://shishirpy.github.io/tag/zeromq.html">zeromq</a>
+                                <a class="post-category" href="https://shishirpy.github.io/tag/distributed-systems.html">distributed systems</a>
                         </p>
                 </header>
             </section>
-            <p>In my <a href="https://shishirpy.bitbucket.io/majordomo-protocol.html">last post</a>, we saw an example of the <code>majordomo protocol</code> (MDP) in action. MDP is a reliable service oriented protocol. It can be become the single point to server different services to any user.
+            <p>In my <a href="https://shishirpy.github.io/majordomo-protocol.html">last post</a>, we saw an example of the <code>majordomo protocol</code> (MDP) in action. MDP is a reliable service oriented protocol. It can be become the single point to server different services to any user.
 The <a href="static/mdbroker.py">broker implementation</a> in the example also has a special feature, called the <code>majordomo management interface</code> (MMI), it can tell if there is at least on worker for a given service, i.e., if the the service is available or not. This is achieved by creating a <code>mmi.service</code> service on the broker. The service can be easily called by:</p>
 <div class="highlight"><pre><span></span><code><span class="n">reply</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;mmi.service&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;s_name&quot;</span><span class="p">)</span>
 </code></pre></div>
