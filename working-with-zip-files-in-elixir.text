@@ -1,0 +1,70 @@
+Title: Working with Zip Files in Elixir
+Date: 2023-03-18 21:32
+Category: elixir, erlang
+Tags: zip, elixir, erlang
+
+[Elixir File](https://hexdocs.pm/elixir/1.12/File.html) module does give an option to read compressed file, but I haven't really figured out how to use it. [Erlang's standard libary](https://www.erlang.org/doc/man/zip.html) does have `zip` module is much easier to use. Let's see how:
+
+I have two files (`posts.json` and `todos.json`) in `two_files.zip`.
+
+We can unzip the files with:
+```Elixir
+iex> :zip.unzip('two_files.zip')
+
+{:ok, ['posts.json', 'todos.json']}
+```
+This command create the files `posts.json` and `todos.json` in the current working directory. If we only want to read the contents of the zipped file without actually create their unzipped versions in the file system we can use the `:memory` option,
+```Elixir
+iex> :zip.unzip(fpath, [:memory])
+
+{:ok,
+ [
+   {'posts.json',
+    "[\n  {\n   \"userId\": 2,\n    \"id\": 15,\n    \"title\": \"eveniet quod temporibus\",\n    \"body\": \"reprehenderit quos placeat\\nvelit minima officia dolores impedit repudiandae molestiae nam\\nvoluptas recusandae quis delectus\\nofficiis harum fugiat" <> ...},
+   {'todos.json',
+    "[\n  {\n    \"userId\": 2,\n    \"id\": 35,\n    \"title\": \"repellendus veritatis molestias dicta incidunt\",\n    \"completed\": true\n  },\n  {\n    \"userId\": 2,\n    \"id\": 36,\n " <> ...},
+ ]}
+```
+**NOTE** : File path should be enclosed in single quote. Using double quotes will give an error.
+```Elixir
+iex> :zip.unzip("two_files.zip")
+
+{:error,
+ {:EXIT,
+  {{:badmatch, "two_files.zip"},
+   [
+     ...
+   ]}}}
+```
+
+The module provides many useful functions. For example:
+
+* We can list the contents of the zip file with `list_dir`.
+
+```Elixir
+iex> :zip.list_dir('two_files.zip')
+{:ok,
+[
+{:zip_comment, []},
+{:zip_file, 'posts.json',
+    {:file_info, 27520, :regular, :read_write, {{2023, 3, 17}, {21, 56, 18}},
+    {{2023, 3, 17}, {21, 56, 18}}, {{2023, 3, 17}, {21, 56, 18}}, 54, 1, 0, 0,
+    0, 0, 0}, [], 0, 7048},
+{:zip_file, 'todos.json',
+    {:file_info, 24311, :regular, :read_write, {{2023, 3, 17}, {21, 56, 28}},
+    {{2023, 3, 17}, {21, 56, 28}}, {{2023, 3, 17}, {21, 56, 28}}, 54, 1, 0, 0,
+    0, 0, 0}, [], 7523, 3986}
+]}
+```
+
+* We can extract partially. In our example, if we want to only extract `todo.json`, we can do that by,
+```Elixir
+iex> :zip.unzip('two_files.zip', [:memory, file_list: ['todos.json']])
+
+{:ok,
+ [
+   {'todos.json',
+    "[\n  {\n    \"userId\": 2,\n    \"id\": 35,\n    \"title\": \"repellendus veritatis molestias dicta incidunt\",\n    \"completed\": true\n  },\n  {\n    \"userId\": 2,\n    \"id\": 36,\n " <> ...}
+ ]}
+```
+

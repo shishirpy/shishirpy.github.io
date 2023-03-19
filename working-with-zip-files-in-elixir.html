@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="uniformly@random, ">
+
+        <link rel="alternate"  href="https://shishirpy.github.io/feeds/all.atom.xml" type="application/atom+xml" title="uniformly@random Full Atom Feed"/>
+
+        <title>Working with Zip Files in Elixir // uniformly@random // </title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://shishirpy.github.io/theme/css/pure.css">
+    <link rel="stylesheet" href="https://shishirpy.github.io/theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('image/banner_3.jpg')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <h1 class="brand-main"><a href="https://shishirpy.github.io">uniformly@random</a></h1>
+                            <p class="tagline"></p>
+                                <p class="social">
+                                    <a href="https://twitter.com/shishirpy">
+                                        <i class="fa fa-twitter-square fa-3x"></i>
+                                    </a>
+                                    <a href="https://bitbucket.org/shishirpy">
+                                        <i class="fa fa-bitbucket fa-3x"></i>
+                                    </a>
+                                    <a href="https://github.com/shishirpy">
+                                        <i class="fa fa-github fa-3x"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/shishir-pandey-69246652/">
+                                        <i class="fa fa-linkedin fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
+        </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Working with Zip Files in Elixir</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="https://shishirpy.github.io/tag/zip.html">zip</a>
+                                <a class="post-category" href="https://shishirpy.github.io/tag/elixir.html">elixir</a>
+                                <a class="post-category" href="https://shishirpy.github.io/tag/erlang.html">erlang</a>
+                        </p>
+                </header>
+            </section>
+            <p><a href="https://hexdocs.pm/elixir/1.12/File.html">Elixir File</a> module does give an option to read compressed file, but I haven't really figured out how to use it. <a href="https://www.erlang.org/doc/man/zip.html">Erlang's standard libary</a> does have <code>zip</code> module is much easier to use. Let's see how:</p>
+<p>I have two files (<code>posts.json</code> and <code>todos.json</code>) in <code>two_files.zip</code>.</p>
+<p>We can unzip the files with:</p>
+<div class="highlight"><pre><span></span><code><span class="n">iex</span><span class="o">&gt;</span><span class="w"> </span><span class="ss">:zip</span><span class="o">.</span><span class="n">unzip</span><span class="p">(</span><span class="s1">&#39;two_files.zip&#39;</span><span class="p">)</span>
+
+<span class="p">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;posts.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;todos.json&#39;</span><span class="p">]}</span>
+</code></pre></div>
+
+<p>This command create the files <code>posts.json</code> and <code>todos.json</code> in the current working directory. If we only want to read the contents of the zipped file without actually create their unzipped versions in the file system we can use the <code>:memory</code> option,</p>
+<div class="highlight"><pre><span></span><code><span class="n">iex</span><span class="o">&gt;</span><span class="w"> </span><span class="ss">:zip</span><span class="o">.</span><span class="n">unzip</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="ss">:memory</span><span class="p">])</span>
+
+<span class="p">{</span><span class="ss">:ok</span><span class="p">,</span>
+<span class="w"> </span><span class="p">[</span>
+<span class="w">   </span><span class="p">{</span><span class="s1">&#39;posts.json&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;[</span><span class="se">\n</span><span class="s2">  {</span><span class="se">\n</span><span class="s2">   \&quot;userId\&quot;: 2,</span><span class="se">\n</span><span class="s2">    \&quot;id\&quot;: 15,</span><span class="se">\n</span><span class="s2">    \&quot;title\&quot;: \&quot;eveniet quod temporibus\&quot;,</span><span class="se">\n</span><span class="s2">    \&quot;body\&quot;: \&quot;reprehenderit quos placeat\\nvelit minima officia dolores impedit repudiandae molestiae nam\\nvoluptas recusandae quis delectus\\nofficiis harum fugiat&quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">...</span><span class="p">},</span>
+<span class="w">   </span><span class="p">{</span><span class="s1">&#39;todos.json&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;[</span><span class="se">\n</span><span class="s2">  {</span><span class="se">\n</span><span class="s2">    \&quot;userId\&quot;: 2,</span><span class="se">\n</span><span class="s2">    \&quot;id\&quot;: 35,</span><span class="se">\n</span><span class="s2">    \&quot;title\&quot;: \&quot;repellendus veritatis molestias dicta incidunt\&quot;,</span><span class="se">\n</span><span class="s2">    \&quot;completed\&quot;: true</span><span class="se">\n</span><span class="s2">  },</span><span class="se">\n</span><span class="s2">  {</span><span class="se">\n</span><span class="s2">    \&quot;userId\&quot;: 2,</span><span class="se">\n</span><span class="s2">    \&quot;id\&quot;: 36,</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">...</span><span class="p">},</span>
+<span class="w"> </span><span class="p">]}</span>
+</code></pre></div>
+
+<p><strong>NOTE</strong> : File path should be enclosed in single quote. Using double quotes will give an error.</p>
+<div class="highlight"><pre><span></span><code><span class="n">iex</span><span class="o">&gt;</span><span class="w"> </span><span class="ss">:zip</span><span class="o">.</span><span class="n">unzip</span><span class="p">(</span><span class="s2">&quot;two_files.zip&quot;</span><span class="p">)</span>
+
+<span class="p">{</span><span class="ss">:error</span><span class="p">,</span>
+<span class="w"> </span><span class="p">{</span><span class="ss">:EXIT</span><span class="p">,</span>
+<span class="w">  </span><span class="p">{{</span><span class="ss">:badmatch</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;two_files.zip&quot;</span><span class="p">},</span>
+<span class="w">   </span><span class="p">[</span>
+<span class="w">     </span><span class="n">...</span>
+<span class="w">   </span><span class="p">]}}}</span>
+</code></pre></div>
+
+<p>The module provides many useful functions. For example:</p>
+<ul>
+<li>We can list the contents of the zip file with <code>list_dir</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">iex</span><span class="o">&gt;</span><span class="w"> </span><span class="ss">:zip</span><span class="o">.</span><span class="n">list_dir</span><span class="p">(</span><span class="s1">&#39;two_files.zip&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="ss">:ok</span><span class="p">,</span>
+<span class="p">[</span>
+<span class="p">{</span><span class="ss">:zip_comment</span><span class="p">,</span><span class="w"> </span><span class="p">[]},</span>
+<span class="p">{</span><span class="ss">:zip_file</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;posts.json&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">{</span><span class="ss">:file_info</span><span class="p">,</span><span class="w"> </span><span class="mi">27520</span><span class="p">,</span><span class="w"> </span><span class="ss">:regular</span><span class="p">,</span><span class="w"> </span><span class="ss">:read_write</span><span class="p">,</span><span class="w"> </span><span class="p">{{</span><span class="mi">2023</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">56</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p">}},</span>
+<span class="w">    </span><span class="p">{{</span><span class="mi">2023</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">56</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p">}},</span><span class="w"> </span><span class="p">{{</span><span class="mi">2023</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">56</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p">}},</span><span class="w"> </span><span class="mi">54</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">},</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">7048</span><span class="p">},</span>
+<span class="p">{</span><span class="ss">:zip_file</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;todos.json&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">{</span><span class="ss">:file_info</span><span class="p">,</span><span class="w"> </span><span class="mi">24311</span><span class="p">,</span><span class="w"> </span><span class="ss">:regular</span><span class="p">,</span><span class="w"> </span><span class="ss">:read_write</span><span class="p">,</span><span class="w"> </span><span class="p">{{</span><span class="mi">2023</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">56</span><span class="p">,</span><span class="w"> </span><span class="mi">28</span><span class="p">}},</span>
+<span class="w">    </span><span class="p">{{</span><span class="mi">2023</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">56</span><span class="p">,</span><span class="w"> </span><span class="mi">28</span><span class="p">}},</span><span class="w"> </span><span class="p">{{</span><span class="mi">2023</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">56</span><span class="p">,</span><span class="w"> </span><span class="mi">28</span><span class="p">}},</span><span class="w"> </span><span class="mi">54</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">},</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="mi">7523</span><span class="p">,</span><span class="w"> </span><span class="mi">3986</span><span class="p">}</span>
+<span class="p">]}</span>
+</code></pre></div>
+
+<ul>
+<li>We can extract partially. In our example, if we want to only extract <code>todo.json</code>, we can do that by,</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">iex</span><span class="o">&gt;</span><span class="w"> </span><span class="ss">:zip</span><span class="o">.</span><span class="n">unzip</span><span class="p">(</span><span class="s1">&#39;two_files.zip&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="ss">:memory</span><span class="p">,</span><span class="w"> </span><span class="ss">file_list</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;todos.json&#39;</span><span class="p">]])</span>
+
+<span class="p">{</span><span class="ss">:ok</span><span class="p">,</span>
+<span class="w"> </span><span class="p">[</span>
+<span class="w">   </span><span class="p">{</span><span class="s1">&#39;todos.json&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;[</span><span class="se">\n</span><span class="s2">  {</span><span class="se">\n</span><span class="s2">    \&quot;userId\&quot;: 2,</span><span class="se">\n</span><span class="s2">    \&quot;id\&quot;: 35,</span><span class="se">\n</span><span class="s2">    \&quot;title\&quot;: \&quot;repellendus veritatis molestias dicta incidunt\&quot;,</span><span class="se">\n</span><span class="s2">    \&quot;completed\&quot;: true</span><span class="se">\n</span><span class="s2">  },</span><span class="se">\n</span><span class="s2">  {</span><span class="se">\n</span><span class="s2">    \&quot;userId\&quot;: 2,</span><span class="se">\n</span><span class="s2">    \&quot;id\&quot;: 36,</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">...</span><span class="p">}</span>
+<span class="w"> </span><span class="p">]}</span>
+</code></pre></div>
+            <a href="#" class="go-top">Go Top</a>
+    <div class="comments">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = "shishirpy-weblog"; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+<footer class="footer">
+    <p>&copy; shishir pandey &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+</body>
+</html>
