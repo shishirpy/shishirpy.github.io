@@ -7,7 +7,7 @@
 
         <link rel="alternate"  href="https://shishirpy.github.io/feeds/all.atom.xml" type="application/atom+xml" title="uniformly@random Full Atom Feed"/>
 
-        <title>all posts // uniformly@random // </title>
+        <title>elixir, erlang, odbc, etco category // uniformly@random // </title>
 
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
@@ -45,40 +45,40 @@
                 </div>
             </div>
         </div>
-    <div class="pure-u-1">
+    <div class="pure-u">
         <div class="content">
-            <h1 class="content-subhead">All posts</h1>
-                <div class="archive-item">
-                    <h5 class="archive-date">2023</h5>
-                    <h4 class="archive-date">25 June</h4>
-                    <div class="archive-post"><a href="connecting-to-sql-server-with-windows-auth-from-elixir.html">Connecting to SQL-Server with Windows Auth from Elixir</a></div>
-                </div>
-                <div class="archive-item">
-                    <h5 class="archive-date">2023</h5>
-                    <h4 class="archive-date">18 March</h4>
-                    <div class="archive-post"><a href="working-with-zip-files-in-elixir.html">Working with Zip Files in Elixir</a></div>
-                </div>
-                <div class="archive-item">
-                    <h5 class="archive-date">2023</h5>
-                    <h4 class="archive-date">03 February</h4>
-                    <div class="archive-post"><a href="compile-elixir-dependency.html">Compile Elixir Dependency</a></div>
-                </div>
-                <div class="archive-item">
-                    <h5 class="archive-date">2020</h5>
-                    <h4 class="archive-date">09 June</h4>
-                    <div class="archive-post"><a href="majordomo-management-interface.html">Majordomo Management Interface</a></div>
-                </div>
-                <div class="archive-item">
-                    <h5 class="archive-date">2020</h5>
-                    <h4 class="archive-date">21 May</h4>
-                    <div class="archive-post"><a href="majordomo-protocol.html">Majordomo Protocol</a></div>
-                </div>
-<footer class="footer">
+            <!-- A wrapper for all the blog posts -->
+            <div class="posts">
+                <h1 class="content-subhead">
+Posts in 'elixir, erlang, odbc, etco'                </h1>
+                    <section class="post">
+                        <header class="post-header">
+                            <h3><a class="post-title" href="https://shishirpy.github.io/connecting-to-sql-server-with-windows-auth-from-elixir.html">Connecting to SQL-Server with Windows Auth from Elixir</a></h3>
+                            <p class="post-meta"><p>The goto method to connect to databases in Elixir are the Ecto adapters. Connecting to the SQL-server is done using the <code>TDS</code> adapter. Unfortunately, <code>TDS</code> does not support windows authetication. </p>
+<p>The way to overcome this limitation is to use the erlang <a href="https://www.erlang.org/doc/man/odbc.html"><code>ODBC</code> library</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">def</span><span class="w"> </span><span class="n">get_data</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">ref</span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">:odbc</span><span class="o">.</span><span class="n">connect …</span></code></pre></div></p>
+                            <p class="post-meta">
+                                in <a href="https://shishirpy.github.io/category/elixir-erlang-odbc-etco.html">elixir, erlang, odbc, etco</a> &middot; Sun 25 June 2023
+                            </p>
+                        </header>
+                    </section>
+<div class="pagination-wrapper content-subhead">
+    <div class="pagination">
+        <div class="pagination-left">
+                &nbsp;
+        </div>
+        <span>Page 1 / 1</span>
+        <div class="pagination-right">
+        </div>
+    </div>
+</div><footer class="footer">
     <p>&copy; shishir pandey &ndash;
         Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
         for <a href="http://blog.getpelican.com/">Pelican</a>
     </p>
-</footer>        </div>
+</footer>            </div>
+        </div>
     </div>
     </div>
     <script>

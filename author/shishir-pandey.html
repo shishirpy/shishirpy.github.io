@@ -53,6 +53,18 @@
 Posts by 'shishir pandey'                </h1>
                     <section class="post">
                         <header class="post-header">
+                            <h3><a class="post-title" href="https://shishirpy.github.io/connecting-to-sql-server-with-windows-auth-from-elixir.html">Connecting to SQL-Server with Windows Auth from Elixir</a></h3>
+                            <p class="post-meta"><p>The goto method to connect to databases in Elixir are the Ecto adapters. Connecting to the SQL-server is done using the <code>TDS</code> adapter. Unfortunately, <code>TDS</code> does not support windows authetication. </p>
+<p>The way to overcome this limitation is to use the erlang <a href="https://www.erlang.org/doc/man/odbc.html"><code>ODBC</code> library</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">def</span><span class="w"> </span><span class="n">get_data</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">ref</span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">:odbc</span><span class="o">.</span><span class="n">connect …</span></code></pre></div></p>
+                            <p class="post-meta">
+                                in <a href="https://shishirpy.github.io/category/elixir-erlang-odbc-etco.html">elixir, erlang, odbc, etco</a> &middot; Sun 25 June 2023
+                            </p>
+                        </header>
+                    </section>
+                    <section class="post">
+                        <header class="post-header">
                             <h3><a class="post-title" href="https://shishirpy.github.io/working-with-zip-files-in-elixir.html">Working with Zip Files in Elixir</a></h3>
                             <p class="post-meta"><p><a href="https://hexdocs.pm/elixir/1.12/File.html">Elixir File</a> module does give an option to read compressed file, but I haven't really figured out how to use it. <a href="https://www.erlang.org/doc/man/zip.html">Erlang's standard libary</a> does have <code>zip</code> module is much easier to use. Let's see how:</p>
 <p>I have two files (<code>posts.json</code> and <code>todos.json</code>) in <code>two_files.zip</code>.</p>
