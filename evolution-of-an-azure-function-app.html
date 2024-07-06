@@ -92,7 +92,7 @@
 <li>Each file can have hundreds of thousands of objects.</li>
 <li>The output objects should be saved in two different blobs.</li>
 </ol>
-<h2>Attempt 1</h2>
+<h2>Stage 1</h2>
 <p>The easiest thing to do is to write one function that uses an <em>input blob trigger</em>, and two <em>output blob bindings</em>. The architecture at this point will look something like:</p>
 <p><img alt="Attempt 1" src="image/demo1.png"></p>
 <h4>Constraints</h4>
@@ -100,7 +100,7 @@
 <li>Based on our assumption, the program spends about 2s on each object and hence to run a file containting only 1000 objects would take 2000 seconds, that is more than <em>30 mins</em>.</li>
 <li>Consumption plan azure function only gaurantees execution time <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan?tabs=portal#longer-run-duration">less than <em>10 mins</em></a>.</li>
 </ol>
-<h2>Attempt 2</h2>
+<h2>Stage 2</h2>
 <p>To reduce the execution time per function we will use two functions, one will read the blob and send messages to a queue and the other will read these messages and process them. </p>
 <p><img alt="Attempt 2" src="image/demo2.png"></p>
 <p>This architecture has the following benefits:</p>
@@ -117,7 +117,7 @@ failed to be processed.</li>
 <li>Splitting a large blob into messages would take a lot of time. To overcome this problem we add another function to split the big
 input blob to smaller blobs, this produces the third architecture.</li>
 </ol>
-<h3>Attempt 3</h3>
+<h2>Stage 3</h2>
 <p><img alt="Attempt 3" src="image/demo3.png"></p>
             <a href="#" class="go-top">Go Top</a>
     <div class="comments">

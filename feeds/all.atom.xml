@@ -35,7 +35,7 @@
 &lt;li&gt;Each file can have hundreds of thousands of objects.&lt;/li&gt;
 &lt;li&gt;The output objects should be saved in two different blobs.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2&gt;Attempt 1&lt;/h2&gt;
+&lt;h2&gt;Stage 1&lt;/h2&gt;
 &lt;p&gt;The easiest thing to do is to write one function that uses an &lt;em&gt;input blob trigger&lt;/em&gt;, and two &lt;em&gt;output blob bindings&lt;/em&gt;. The architecture at this point will look something like:&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Attempt 1" src="image/demo1.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Constraints&lt;/h4&gt;
@@ -43,7 +43,7 @@
 &lt;li&gt;Based on our assumption, the program spends about 2s on each object and hence to run a file containting only 1000 objects would take 2000 seconds, that is more than &lt;em&gt;30 mins&lt;/em&gt;.&lt;/li&gt;
 &lt;li&gt;Consumption plan azure function only gaurantees execution time &lt;a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan?tabs=portal#longer-run-duration"&gt;less than &lt;em&gt;10 mins&lt;/em&gt;&lt;/a&gt;.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2&gt;Attempt 2&lt;/h2&gt;
+&lt;h2&gt;Stage 2&lt;/h2&gt;
 &lt;p&gt;To reduce the execution time per function we will use two functions, one will read the blob and send messages to a queue and the other will read these messages and process them. &lt;/p&gt;
 &lt;p&gt;&lt;img alt="Attempt 2" src="image/demo2.png"&gt;&lt;/p&gt;
 &lt;p&gt;This architecture has the following benefits:&lt;/p&gt;
@@ -60,7 +60,7 @@ failed to be processed.&lt;/li&gt;
 &lt;li&gt;Splitting a large blob into messages would take a lot of time. To overcome this problem we add another function to split the big
 input blob to smaller blobs, this produces the third architecture.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h3&gt;Attempt 3&lt;/h3&gt;
+&lt;h2&gt;Stage 3&lt;/h2&gt;
 &lt;p&gt;&lt;img alt="Attempt 3" src="image/demo3.png"&gt;&lt;/p&gt;</content><category term="azure, azure-functions"></category><category term="architecture"></category><category term="azure"></category><category term="distributed-systems"></category></entry><entry><title>Connecting to SQL-Server with Windows Auth from Elixir</title><link href="https://shishirpy.github.io/connecting-to-sql-server-with-windows-auth-from-elixir.html" rel="alternate"></link><published>2023-06-25T17:00:00-04:00</published><updated>2023-06-25T17:00:00-04:00</updated><author><name>Shishir Pandey</name></author><id>tag:shishirpy.github.io,2023-06-25:/connecting-to-sql-server-with-windows-auth-from-elixir.html</id><summary type="html">&lt;p&gt;The goto method to connect to databases in Elixir are the Ecto adapters. Connecting to the SQL-server is done using the &lt;code&gt;TDS&lt;/code&gt; adapter. Unfortunately, &lt;code&gt;TDS&lt;/code&gt; does not support windows authetication. &lt;/p&gt;
 &lt;p&gt;The way to overcome this limitation is to use the erlang &lt;a href="https://www.erlang.org/doc/man/odbc.html"&gt;&lt;code&gt;ODBC&lt;/code&gt; library&lt;/a&gt;.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kd"&gt;def&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;get_data&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt;

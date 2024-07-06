@@ -34,7 +34,7 @@ and we want to extract the `name` and `age` information. We will also assume tha
 1. The output objects should be saved in two different blobs.
 
 
-## Attempt 1
+## Stage 1
 The easiest thing to do is to write one function that uses an _input blob trigger_, and two _output blob bindings_. The architecture at this point will look something like:
 
 ![Attempt 1](image/demo1.png)
@@ -44,7 +44,7 @@ The easiest thing to do is to write one function that uses an _input blob trigge
 1. Based on our assumption, the program spends about 2s on each object and hence to run a file containting only 1000 objects would take 2000 seconds, that is more than _30 mins_.
 1. Consumption plan azure function only gaurantees execution time [less than _10 mins_](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan?tabs=portal#longer-run-duration).
 
-## Attempt 2
+## Stage 2
 To reduce the execution time per function we will use two functions, one will read the blob and send messages to a queue and the other will read these messages and process them. 
 
 ![Attempt 2](image/demo2.png)
@@ -63,6 +63,6 @@ When we deployed this function we ran into the following issue:
 1. Splitting a large blob into messages would take a lot of time. To overcome this problem we add another function to split the big
 input blob to smaller blobs, this produces the third architecture.
 
-### Attempt 3
+## Stage 3
 
 ![Attempt 3](image/demo3.png)
