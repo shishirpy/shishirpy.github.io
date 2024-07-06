@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="uniformly@random, ">
+
+        <link rel="alternate"  href="https://shishirpy.github.io/feeds/all.atom.xml" type="application/atom+xml" title="uniformly@random Full Atom Feed"/>
+
+        <title>Evolution of an Azure Function App // uniformly@random // </title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://shishirpy.github.io/theme/css/pure.css">
+    <link rel="stylesheet" href="https://shishirpy.github.io/theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('image/banner_3.jpg')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <h1 class="brand-main"><a href="https://shishirpy.github.io">uniformly@random</a></h1>
+                            <p class="tagline"></p>
+                                <p class="social">
+                                    <a href="https://twitter.com/shishirpy">
+                                        <i class="fa fa-twitter-square fa-3x"></i>
+                                    </a>
+                                    <a href="https://bitbucket.org/shishirpy">
+                                        <i class="fa fa-bitbucket fa-3x"></i>
+                                    </a>
+                                    <a href="https://github.com/shishirpy">
+                                        <i class="fa fa-github fa-3x"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/shishir-pandey-69246652/">
+                                        <i class="fa fa-linkedin fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
+        </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Evolution of an Azure Function App</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="https://shishirpy.github.io/tag/architecture.html">architecture</a>
+                                <a class="post-category" href="https://shishirpy.github.io/tag/azure.html">azure</a>
+                                <a class="post-category" href="https://shishirpy.github.io/tag/distributed-systems.html">distributed-systems</a>
+                        </p>
+                </header>
+            </section>
+            <p><strong>Problem Statement:</strong> Extract information from a JSON file containg an array of objects. For this article, each object in the file is as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bilbo&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">111</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>and we want to extract the <code>name</code> and <code>age</code> information. We will also assume that each extraction take about <code>1s</code> to perform. This is to keep the problem simple and still discuss the complexities associated with long running funcitons.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bilbo&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">111</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Contstraints</strong></p>
+<ol>
+<li>The input file is a blob on azure cloud.</li>
+<li>A file can be added anytime during the day.</li>
+<li>Each file can have hundreds of thousands of objects.</li>
+<li>The output objects should be saved in two different blobs.</li>
+</ol>
+<h2>Attempt 1</h2>
+<p>The easiest thing to do is to write one function that uses an <em>input blob trigger</em>, and two <em>output blob bindings</em>. The architecture at this point will look something like:</p>
+<p><img alt="Attempt 1" src="image/demo1.png"></p>
+<h4>Constraints</h4>
+<ol>
+<li>Based on our assumption, the program spends about 2s on each object and hence to run a file containting only 1000 objects would take 2000 seconds, that is more than <em>30 mins</em>.</li>
+<li>Consumption plan azure function only gaurantees execution time <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan?tabs=portal#longer-run-duration">less than <em>10 mins</em></a>.</li>
+</ol>
+<h2>Attempt 2</h2>
+<p>To reduce the execution time per function we will use two functions, one will read the blob and send messages to a queue and the other will read these messages and process them. </p>
+<p><img alt="Attempt 2" src="image/demo2.png"></p>
+<p>This architecture has the following benefits:</p>
+<ol>
+<li>Each function processing the message runs only about 2s.</li>
+<li>The application auto scales horizontally based on the number of message in the queue.</li>
+<li>If for some reason processing of one of messages fails, it will be retried a few times based on the settings.</li>
+<li>The pipeline continues to work even when there are failures processing some messages.</li>
+<li>The <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv5&amp;pivots=programming-language-python#poison-messages">poison queues</a> will have all messages that
+failed to be processed.</li>
+</ol>
+<p>When we deployed this function we ran into the following issue: </p>
+<ol>
+<li>Splitting a large blob into messages would take a lot of time. To overcome this problem we add another function to split the big
+input blob to smaller blobs, this produces the third architecture.</li>
+</ol>
+<h3>Attempt 3</h3>
+<p><img alt="Attempt 3" src="image/demo3.png"></p>
+            <a href="#" class="go-top">Go Top</a>
+    <div class="comments">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = "shishirpy-weblog"; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+<footer class="footer">
+    <p>&copy; Shishir Pandey &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+</body>
+</html>

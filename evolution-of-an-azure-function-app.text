@@ -1,0 +1,68 @@
+Title: Evolution of an Azure Function App
+Date: 2024-07-06 12:30
+Category: azure, azure-functions
+Tags: architecture, azure, distributed-systems
+
+**Problem Statement:** Extract information from a JSON file containg an array of objects. For this article, each object in the file is as follows:
+
+```json
+{
+    "id": 1,
+    "name": "Bilbo",
+    "age": 111
+}
+```
+and we want to extract the `name` and `age` information. We will also assume that each extraction take about `1s` to perform. This is to keep the problem simple and still discuss the complexities associated with long running funcitons.
+```json
+{
+    "id": 1,
+    "name": "Bilbo",
+}
+```
+```json
+{
+    "id": 1,
+    "age": 111
+}
+```
+
+**Contstraints**
+
+1. The input file is a blob on azure cloud.
+1. A file can be added anytime during the day.
+1. Each file can have hundreds of thousands of objects.
+1. The output objects should be saved in two different blobs.
+
+
+## Attempt 1
+The easiest thing to do is to write one function that uses an _input blob trigger_, and two _output blob bindings_. The architecture at this point will look something like:
+
+![Attempt 1](image/demo1.png)
+
+#### Constraints
+
+1. Based on our assumption, the program spends about 2s on each object and hence to run a file containting only 1000 objects would take 2000 seconds, that is more than _30 mins_.
+1. Consumption plan azure function only gaurantees execution time [less than _10 mins_](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan?tabs=portal#longer-run-duration).
+
+## Attempt 2
+To reduce the execution time per function we will use two functions, one will read the blob and send messages to a queue and the other will read these messages and process them. 
+
+![Attempt 2](image/demo2.png)
+
+This architecture has the following benefits:
+
+1. Each function processing the message runs only about 2s.
+1. The application auto scales horizontally based on the number of message in the queue.
+1. If for some reason processing of one of messages fails, it will be retried a few times based on the settings.
+1. The pipeline continues to work even when there are failures processing some messages.
+1. The [poison queues](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv5&pivots=programming-language-python#poison-messages) will have all messages that
+failed to be processed.
+
+When we deployed this function we ran into the following issue: 
+
+1. Splitting a large blob into messages would take a lot of time. To overcome this problem we add another function to split the big
+input blob to smaller blobs, this produces the third architecture.
+
+### Attempt 3
+
+![Attempt 3](image/demo3.png)
