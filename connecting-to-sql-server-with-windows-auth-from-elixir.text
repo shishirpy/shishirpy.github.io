@@ -1,0 +1,14 @@
+Title: Connecting to SQL-Server with Windows Auth from Elixir
+Date: 2023-6-25 17:00
+Category: elixir, erlang, odbc, etco
+
+The goto method to connect to databases in Elixir are the Ecto adapters. Connecting to the SQL-server is done using the `TDS` adapter. Unfortunately, `TDS` does not support windows authetication. 
+
+The way to overcome this limitation is to use the erlang [`ODBC` library](https://www.erlang.org/doc/man/odbc.html).
+
+```elixir
+def get_data do
+    {:ok, ref} = :odbc.connect('Driver={SQL Server};SERVER=<<SERVER>>;Trusted_Connection=yes;DATABASE=<<DB>>', [])
+    :odbc.sql_query(ref, 'SELECT TOP 10 * FROM <<TABLE>>')
+  end
+```

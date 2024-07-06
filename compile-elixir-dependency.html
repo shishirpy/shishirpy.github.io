@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="uniformly@random, ">
+
+        <link rel="alternate"  href="https://shishirpy.github.io/feeds/all.atom.xml" type="application/atom+xml" title="uniformly@random Full Atom Feed"/>
+
+        <title>Compile Elixir Dependency // uniformly@random // </title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://shishirpy.github.io/theme/css/pure.css">
+    <link rel="stylesheet" href="https://shishirpy.github.io/theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('image/banner_3.jpg')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <h1 class="brand-main"><a href="https://shishirpy.github.io">uniformly@random</a></h1>
+                            <p class="tagline"></p>
+                                <p class="social">
+                                    <a href="https://twitter.com/shishirpy">
+                                        <i class="fa fa-twitter-square fa-3x"></i>
+                                    </a>
+                                    <a href="https://bitbucket.org/shishirpy">
+                                        <i class="fa fa-bitbucket fa-3x"></i>
+                                    </a>
+                                    <a href="https://github.com/shishirpy">
+                                        <i class="fa fa-github fa-3x"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/shishir-pandey-69246652/">
+                                        <i class="fa fa-linkedin fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
+        </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Compile Elixir Dependency</h1>
+                        <p class="post-meta">
+                            // under                         </p>
+                </header>
+            </section>
+            <p>I wanted to use the zeromq <a href="https://github.com/zeromq/chumak"><code>chumak</code> library</a> in Elixir. Since, <code>chumak</code> is an Erlang implementation, one should be able to use it without any modifications. I wasn't able to get it working. So decided to make changes to the <code>mix</code> dependency source code of <code>chumak</code> to find out what was going on. I realized the compiling the application did not compile the changes in <code>chumak</code> source code I made. Thanks to this post by <a href="https://til.hashrocket.com/posts/16b7abf766-compile-an-elixir-dependency-as-you-change-it">hashrocket</a> I learnt that to be able to compile the source code of the dependecy we should add it to the dependencies as follows.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">defp</span><span class="w"> </span><span class="n">deps</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span><span class="p">[</span>
+<span class="w">    </span><span class="n">...</span>
+<span class="w">    </span><span class="p">{</span><span class="ss">:chumak</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;~&gt; 1.4.0&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">path</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;deps/chumak&#39;</span><span class="p">}</span>
+<span class="w">    </span><span class="n">...</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="k">end</span>
+</code></pre></div>
+
+<p>Additionally,</p>
+<ol>
+<li>
+<p>I noticed that you cannot simply use the <code>recompile</code> command in <code>iex</code> shell to compile the dependency changes.</p>
+</li>
+<li>
+<p>You have to exit the current <code>iex</code> shell and start a new one with <code>iex -S mix</code>.</p>
+</li>
+</ol>
+            <a href="#" class="go-top">Go Top</a>
+    <div class="comments">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = "shishirpy-weblog"; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+<footer class="footer">
+    <p>&copy; Shishir Pandey &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+</body>
+</html>

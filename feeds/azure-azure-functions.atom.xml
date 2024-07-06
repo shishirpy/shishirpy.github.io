@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>uniformly@random - azure, azure-functions</title><link href="https://shishirpy.github.io/" rel="alternate"></link><link href="https://shishirpy.github.io/feeds/azure-azure-functions.atom.xml" rel="self"></link><id>https://shishirpy.github.io/</id><updated>2024-04-05T12:30:00-04:00</updated><entry><title>Evolution of an Azure Function App</title><link href="https://shishirpy.github.io/evolution-of-an-azure-function-app.html" rel="alternate"></link><published>2024-04-05T12:30:00-04:00</published><updated>2024-04-05T12:30:00-04:00</updated><author><name>Shishir Pandey</name></author><id>tag:shishirpy.github.io,2024-04-05:/evolution-of-an-azure-function-app.html</id><summary type="html">&lt;p&gt;&lt;strong&gt;Problem Statement:&lt;/strong&gt; Extract information from a JSON file containg an array of objects. For this article, each object in the file is as follows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Bilbo&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;age&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;111&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;and we want to extract the &lt;code&gt;name&lt;/code&gt; and &lt;code&gt;age&lt;/code&gt; information. We will also assume that each extraction take about &lt;code&gt;1s …&lt;/code&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;strong&gt;Problem Statement:&lt;/strong&gt; Extract information from a JSON file containg an array of objects. For this article, each object in the file is as follows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Bilbo&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;age&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;111&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;and we want to extract the &lt;code&gt;name&lt;/code&gt; and &lt;code&gt;age&lt;/code&gt; information. We will also assume that each extraction take about &lt;code&gt;1s&lt;/code&gt; to perform. This is to keep the problem simple and still discuss the complexities associated with long running funcitons.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Bilbo&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;age&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;111&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Contstraints&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The input file is a blob on azure cloud.&lt;/li&gt;
+&lt;li&gt;A file can be added anytime during the day.&lt;/li&gt;
+&lt;li&gt;Each file can have hundreds of thousands of objects.&lt;/li&gt;
+&lt;li&gt;The output objects should be saved in two different blobs.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Attempt 1&lt;/h2&gt;
+&lt;p&gt;The easiest thing to do is to write one function that uses an &lt;em&gt;input blob trigger&lt;/em&gt;, and two &lt;em&gt;output blob bindings&lt;/em&gt;. The architecture at this point will look something like:&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Attempt 1" src="image/demo1.png"&gt;&lt;/p&gt;
+&lt;h4&gt;Constraints&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Based on our assumption, the program spends about 2s on each object and hence to run a file containting only 1000 objects would take 2000 seconds, that is more than &lt;em&gt;30 mins&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;Consumption plan azure function only gaurantees execution time &lt;a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan?tabs=portal#longer-run-duration"&gt;less than &lt;em&gt;10 mins&lt;/em&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Attempt 2&lt;/h2&gt;
+&lt;p&gt;To reduce the execution time per function we will use two functions, one will read the blob and send messages to a queue and the other will read these messages and process them. &lt;/p&gt;
+&lt;p&gt;&lt;img alt="Attempt 2" src="image/demo2.png"&gt;&lt;/p&gt;
+&lt;p&gt;This architecture has the following benefits:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Each function processing the message runs only about 2s.&lt;/li&gt;
+&lt;li&gt;The application auto scales horizontally based on the number of message in the queue.&lt;/li&gt;
+&lt;li&gt;If for some reason processing of one of messages fails, it will be retried a few times based on the settings.&lt;/li&gt;
+&lt;li&gt;The pipeline continues to work even when there are failures processing some messages.&lt;/li&gt;
+&lt;li&gt;The &lt;a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv5&amp;amp;pivots=programming-language-python#poison-messages"&gt;poison queues&lt;/a&gt; will have all messages that
+failed to be processed.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;When we deployed this function we ran into the following issue: &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Splitting a large blob into messages would take a lot of time. To overcome this problem we add another function to split the big
+input blob to smaller blobs, this produces the third architecture.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Attempt 3&lt;/h3&gt;
+&lt;p&gt;&lt;img alt="Attempt 3" src="image/demo3.png"&gt;&lt;/p&gt;</content><category term="azure, azure-functions"></category><category term="architecture"></category><category term="azure"></category><category term="distributed-systems"></category></entry></feed>
